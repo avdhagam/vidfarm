@@ -1,5 +1,4 @@
 import AWS from 'aws-sdk';
-import fs from 'fs'
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -8,14 +7,13 @@ dotenv.config();
 
 const uploadFileToS3 = async (req, res) => {
 
-    const filePath = '/Users/avanidhagam/Desktop/resume_projects/vidfarm/upload_service/assets/pic1.png';
+    console.log("upload req received");
 
-
-    // Check if the file exists
-    if (!fs.existsSync(filePath)) {
-        console.log('File does not exist: ', filePath);
-        return;
+    if (!req.file) {
+        console.log("no file received");
+        return res.status(400).send('No file received');
     }
+    const file = req.file;
 
 
     AWS.config.update({
@@ -27,8 +25,8 @@ const uploadFileToS3 = async (req, res) => {
 
     const params = {
         Bucket: process.env.AWS_BUCKET,
-        Key: 'pic1.png',
-        Body: fs.createReadStream(filePath)
+        Key: file.originalname,
+        Body: file.buffer
     };
 
 
